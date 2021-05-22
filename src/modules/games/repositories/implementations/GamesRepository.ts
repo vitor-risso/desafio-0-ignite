@@ -13,9 +13,10 @@ export class GamesRepository implements IGamesRepository {
   }
 
   async findByTitleContaining(param: string): Promise<Game[]> {
+    const title = `%${param.toLowerCase()}%`
     return this.repository
-      .createQueryBuilder("games")
-      .innerJoin("games.title", "title",)
+      .createQueryBuilder("game")
+      .where(`LOWER(game.title) LIKE LOWER('${title}')`)
       .getMany()
     // Complete usando query builder
   }
@@ -29,8 +30,12 @@ export class GamesRepository implements IGamesRepository {
   async findUsersByGameId(id: string): Promise<User[]> {
     return await this.repository
       .createQueryBuilder("games")
-      .where("games.id = :id")
-      .getOne().then(element => element?.users as User[])
+      .where(`games.id = '${id}'`)
+      .relation(Game, 'users')
+      .of(id)
+      .loadMany()
+
+
     // Complete usando query builder
   }
 }
