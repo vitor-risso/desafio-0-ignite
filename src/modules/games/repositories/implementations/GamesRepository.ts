@@ -30,7 +30,6 @@ export class GamesRepository implements IGamesRepository {
   async findUsersByGameId(id: string): Promise<User[]> {
     return await this.repository
       .createQueryBuilder("games")
-      .where(`games.id = '${id}'`)
       .relation(Game, 'users')
       .of(id)
       .loadMany()
